@@ -57,4 +57,17 @@ describe("getPath", () => {
         // then
         expect(actualPath).toBe(expectedPath);
     });
+    it("should return right path for many child path", () => {
+        // given
+        const expectedPath = 'body > :nth-child(2) > div';
+        document.body.innerHTML = '<div></div><div id="parent"></div>'
+
+        const elementToFind = document.createElement('div');
+
+        document.getElementById("parent").appendChild(elementToFind);
+        // when
+        const actualPath = getPath(elementToFind);
+        // then
+        expect(actualPath).toBe(expectedPath);
+    });
 })

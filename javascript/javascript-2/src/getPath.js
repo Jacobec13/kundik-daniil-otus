@@ -3,35 +3,58 @@ export const getPath = (el) => {
     return getPathInner(firstElem, el);
 }
 
-const getPathInner = (parentElem, el) => {
-    const parentElemName = parentElem.localName;
+const reduceClassesToString = (classList) => [...classList].reduce((acc, className) => {
+    return `${acc}.${className}`
+}, '');
 
-    const childName = constructElemName(parentElem, el);
 
-    return `${parentElemName} > ${childName}`;
-}
 
-const reduceClassesToString = (classList) => [...classList].reduce((acc, className) => {return `${acc}.${className}`}, '');
+const getPathInner = (current, el, elementNameOverride = undefined) => {
+    const children = [...current.children];
+    const currentName = getOneElementName(current, elementNameOverride)
 
-const processChildren = (children, el) => {
-    const indexOfElem = children.indexOf(el);
-
-    if(indexOfElem > -1) {
-        return `:nth-child(${indexOfElem + 1})`
+    if (current === el) {
+        return currentName;
     }
 
-    return null;
-}
-
-const constructElemName = (parentElem, el) => {
-    const children = [...parentElem.children];
-
-    if(children.length > 1) {
-        return  processChildren(children, el);
+    if (children.length === 0) {
+        return undefined;
     } else {
-        const child = children[0];
-        let className = reduceClassesToString(child.classList);
+        if(children.length === 1) {
+           const child = children[0];
+           const childPath = getPathInner(child, el);
+           if(childPath) {
 
-        return `${child.localName}${className}`;
+               return `${currentName} > ${childPath}`;
+           }
+        }
     }
+
+    const {index, subPath} = children.reduce((acc, child, currentIndex) => {
+        if(acc.index === -1) {
+            const childPath = getPathInner(child, el, `:nth-child(${currentIndex + 1})`);
+            if(childPath) {
+                return {
+                    index: currentIndex,
+                    subPath: childPath
+                }
+            }
+        }
+        return acc;
+    }, {index: -1, subPath: undefined});
+
+    if(index > -1) {
+        return `${currentName} > ${subPath}`;
+    }
+
+    return undefined;
+}
+
+const getOneElementName = (el, elementNameOverride) => {
+    if(elementNameOverride) {
+        return elementNameOverride;
+    }
+    let className = reduceClassesToString(el.classList);
+
+    return `${el.localName}${className}`;
 }
