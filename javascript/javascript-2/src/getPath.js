@@ -7,5 +7,10 @@ const getPathInner = (parentElem, el) => {
     const parentElemName = parentElem.localName;
     const children = [...parentElem.children];
 
-    return `${parentElemName} > ${children[0].localName}`
+    const child = children[0];
+    let className = reduceClassesToString(child.classList);
+
+    return `${parentElemName} > ${child.localName}${className}`
 }
+
+const reduceClassesToString = (classList) => [...classList].reduce((acc, className) => {return `${acc}.${className}`}, '')
