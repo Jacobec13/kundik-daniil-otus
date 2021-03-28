@@ -70,4 +70,17 @@ describe("getPath", () => {
         // then
         expect(actualPath).toBe(expectedPath);
     });
+    it('should return path with classname in sub components', function () {
+        // given
+        const expectedPath = 'body > div.test_parent_class_name > div';
+        document.body.innerHTML = '<div id="parent" class="test_parent_class_name"></div>'
+
+        const elementToFind = document.createElement('div');
+
+        document.getElementById("parent").appendChild(elementToFind);
+        // when
+        const actualPath = getPath(elementToFind);
+        // then
+        expect(actualPath).toBe(expectedPath);
+    });
 })
