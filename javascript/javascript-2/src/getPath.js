@@ -5,12 +5,33 @@ export const getPath = (el) => {
 
 const getPathInner = (parentElem, el) => {
     const parentElemName = parentElem.localName;
-    const children = [...parentElem.children];
 
-    const child = children[0];
-    let className = reduceClassesToString(child.classList);
+    const childName = constructElemName(parentElem, el);
 
-    return `${parentElemName} > ${child.localName}${className}`
+    return `${parentElemName} > ${childName}`;
 }
 
-const reduceClassesToString = (classList) => [...classList].reduce((acc, className) => {return `${acc}.${className}`}, '')
+const reduceClassesToString = (classList) => [...classList].reduce((acc, className) => {return `${acc}.${className}`}, '');
+
+const processChildren = (children, el) => {
+    const indexOfElem = children.indexOf(el);
+
+    if(indexOfElem > -1) {
+        return `:nth-child(${indexOfElem + 1})`
+    }
+
+    return null;
+}
+
+const constructElemName = (parentElem, el) => {
+    const children = [...parentElem.children];
+
+    if(children.length > 1) {
+        return  processChildren(children, el);
+    } else {
+        const child = children[0];
+        let className = reduceClassesToString(child.classList);
+
+        return `${child.localName}${className}`;
+    }
+}

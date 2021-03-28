@@ -29,5 +29,32 @@ describe("getPath", () => {
         const actualPath = getPath(elementToFind);
         // then
         expect(actualPath).toBe(expectedPath);
-    })
+    });
+    it("should return class element if there is two elements", () => {
+        // given
+        const expectedPath = 'body > :nth-child(2)';
+
+        document.body.innerHTML = '<div></div>';
+
+        const elementToFind = document.createElement('div');
+
+        document.body.appendChild(elementToFind);
+        // when
+        const actualPath = getPath(elementToFind);
+        // then
+        expect(actualPath).toBe(expectedPath);
+    });
+    it("should build path for deep element", () => {
+        // given
+        const expectedPath = 'body > div > div';
+        document.body.innerHTML = '<div id="parent"></div>'
+
+        const elementToFind = document.createElement('div');
+
+        document.getElementById("parent").appendChild(elementToFind);
+        // when
+        const actualPath = getPath(elementToFind);
+        // then
+        expect(actualPath).toBe(expectedPath);
+    });
 })
